@@ -1,12 +1,16 @@
 const webpack = require('webpack');
 const path = require('path');
 
+const extractCommons = new webpack.optimize.CommonsChunkPlugin({
+  name: 'commons',
+  filename: 'commons.js'
+});
 const config = {
   context: path.resolve(__dirname, 'src'),
   entry: './app.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: '[name].bundle.js'
   },
 
   module:{
@@ -19,8 +23,26 @@ const config = {
           presets: ['env']
         }
       }]
-    }]
-  }
+    },{
+      test: /\.scss$/,
+      use: [
+        'style-loader',
+        'css-loader',
+        'sass-loader'
+      ]
+    },
+    {
+      test: /\.(png|jpg)$/,
+      use: [{
+        loader: 'url-loader',
+        options: {limit: 10000}
+      }]
+    }
+    ]
+  },
+  plugins: [
+    extractCommons
+  ]
 };
 
 module.exports = config
